@@ -17,12 +17,6 @@ const (
 )
 
 type Storer interface {
-	// User
-	CreateUser(ctx context.Context, user *User) (err error)
-	ListUsers(ctx context.Context) (users []User, err error)
-	FindUserByID(ctx context.Context, id string) (user User, err error)
-	DeleteUserByID(ctx context.Context, id string) (err error)
-	UpdateUser(ctx context.Context, user *User) (err error)
 }
 
 type store struct {

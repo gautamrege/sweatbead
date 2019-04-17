@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gautamrege/sweatbead/profilemgr/app"
+	"github.com/gautamrege/sweatbead/eventmgr/app"
 )
 
 type Response struct {
