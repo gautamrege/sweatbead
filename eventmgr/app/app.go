@@ -1,16 +1,22 @@
 package app
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/gautamrege/sweatbead/eventmgr/config"
-	"github.com/jmoiron/sqlx"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.uber.org/zap"
 )
 
 var (
-	db     *sqlx.DB
+	db     *mongo.Database
+	client *mongo.Client
 	logger *zap.SugaredLogger
+	ctx    context.Context
 )
 
 func Init() {
@@ -33,32 +39,39 @@ func InitLogger() {
 
 func initDB() (err error) {
 	dbConfig := config.Database()
-
-	db, err = sqlx.Open(dbConfig.Driver(), dbConfig.ConnectionURL())
+	client, err := mongo.NewClient(options.Client().ApplyURI(dbConfig.ConnectionURL()))
 	if err != nil {
-		return
+		return err
 	}
 
-	if err = db.Ping(); err != nil {
-		return
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		return err
 	}
 
-	db.SetMaxIdleConns(dbConfig.MaxPoolSize())
-	db.SetMaxOpenConns(dbConfig.MaxOpenConns())
-	db.SetConnMaxLifetime(time.Duration(dbConfig.MaxLifeTimeMins()) * time.Minute)
+	err = client.Ping(ctx, readpref.Primary())
 
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Connected To MongoDB")
+	db = client.Database(dbConfig.DbName())
 	return
-}
-
-func GetDB() *sqlx.DB {
-	return db
 }
 
 func GetLogger() *zap.SugaredLogger {
 	return logger
 }
 
+func GetDB() *mongo.Database {
+	return db
+}
+
 func Close() {
 	logger.Sync()
-	db.Close()
+	//db.Close()
 }

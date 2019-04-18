@@ -23,7 +23,7 @@ func (c databaseConfig) Driver() string {
 }
 
 func (c databaseConfig) ConnectionURL() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", c.user, c.password, c.host, c.port, c.name)
+	return fmt.Sprintf("mongodb://%s:%s@%s:%d/%s", c.user, c.password, c.host, c.port, c.name)
 }
 
 func (c databaseConfig) MaxPoolSize() int {
@@ -50,4 +50,8 @@ func newDatabaseConfig() databaseConfig {
 		maxOpenCons:     readEnvInt("DB_MAX_OPEN_CONS"),
 		maxLifeTimeMins: readEnvInt("DB_MAX_LIFE_TIME_MINS"),
 	}
+}
+
+func (c databaseConfig) DbName() string {
+  return c.name
 }
