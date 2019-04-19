@@ -71,6 +71,11 @@ func GetDB() *mongo.Database {
 	return db
 }
 
+func GetCollection(name string) *mongo.Collection {
+	collection := db.Collection(name)
+	return collection
+}
+
 func Close() {
 	logger.Sync()
 	//db.Close()

@@ -35,6 +35,7 @@ func Load() {
 		appPort:       readEnvInt("APP_PORT"),
 		db:            newDatabaseConfig(),
 	}
+
 }
 
 func AppName() string {
