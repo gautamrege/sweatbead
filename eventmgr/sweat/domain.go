@@ -1,7 +1,11 @@
 package sweat
 
+import (
+	"github.com/gautamrege/sweatbead/eventmgr/db"
+)
+
 type createRequest struct {
-	UserId      int64   `json: user_id`
+	UserId      string  `json: user_id`
 	Volume      float32 `json:volume`
 	PH          float32 `json:pH`
 	Timestamp   int64   `json:timestamp`
@@ -9,8 +13,13 @@ type createRequest struct {
 	Temperature float32 `json:temperature`
 }
 
+type sweatInfo struct {
+	Sweat   db.Sweat //`json:"sweat"`
+	Message string   //`json:"message"`
+}
+
 func (cr createRequest) Validate() (err error) {
-	if cr.UserId == 0 {
+	if cr.UserId == "" {
 		return errEmptyUserID
 	}
 	if cr.Volume == 0.0 {

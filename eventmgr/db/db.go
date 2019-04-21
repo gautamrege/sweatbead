@@ -15,7 +15,7 @@ const (
 )
 
 type Storer interface {
-	CreateSweat(ctx context.Context, sweat *Sweat) (err error)
+	CreateSweat(ctx context.Context, sweat *Sweat) (sweatInfo Sweat, err error)
 }
 
 type store struct {

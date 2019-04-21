@@ -9,7 +9,7 @@ import (
 )
 
 type Service interface {
-	create(ctx context.Context, req createRequest) (err error)
+	create(ctx context.Context, req createRequest) (response sweatInfo, err error)
 }
 
 type sweatService struct {
@@ -18,14 +18,14 @@ type sweatService struct {
 	collection *mongo.Collection
 }
 
-func (cs *sweatService) create(ctx context.Context, c createRequest) (err error) {
+func (cs *sweatService) create(ctx context.Context, c createRequest) (response sweatInfo, err error) {
 	err = c.Validate()
 	if err != nil {
 		cs.logger.Errorw("Invalid request for sweat create", "msg", err.Error(), "sweat", c)
 		return
 	}
 
-	err = cs.store.CreateSweat(ctx, &db.Sweat{
+	sweat, err := cs.store.CreateSweat(ctx, &db.Sweat{
 		UserId:      c.UserId,
 		Volume:      c.Volume,
 		PH:          c.PH,
@@ -37,6 +37,8 @@ func (cs *sweatService) create(ctx context.Context, c createRequest) (err error)
 		cs.logger.Error("Error creating user", "err", err.Error())
 		return
 	}
+	response.Sweat = sweat
+	response.Message = "Created Successfully!"
 	return
 }
 

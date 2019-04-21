@@ -23,7 +23,8 @@ func (c databaseConfig) Driver() string {
 }
 
 func (c databaseConfig) ConnectionURL() string {
-	return fmt.Sprintf("mongodb://%s:%s@%s:%d/%s", c.user, c.password, c.host, c.port, c.name)
+	// Added auth mechanism in url as per https://jira.mongodb.org/browse/GODRIVER-485
+	return fmt.Sprintf("mongodb://%s:%s@%s:%d/%s?authMechanism=SCRAM-SHA-1", c.user, c.password, c.host, c.port, c.name)
 }
 
 func (c databaseConfig) MaxPoolSize() int {
@@ -53,5 +54,5 @@ func newDatabaseConfig() databaseConfig {
 }
 
 func (c databaseConfig) DbName() string {
-  return c.name
+	return c.name
 }
