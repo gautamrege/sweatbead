@@ -38,3 +38,23 @@ func (s *store) CreateSweat(ctx context.Context, sweat *Sweat) (sweatInfo Sweat,
 	err = collection.FindOne(ctx, bson.D{{"_id", id}}).Decode(&sweatInfo)
 	return // Here we are not handling err explicilty as we are returning in success & err case. In future if we add some other logic before successful return we will need to handle err as well
 }
+
+func (s *store) ListSweats(ctx context.Context) (sweats []Sweat, err error) {
+	collection := app.GetCollection(sweatCollectionName)
+	err = WithDefaultTimeout(ctx, func(ctx context.Context) error {
+		cur, err := collection.Find(ctx, bson.D{})
+		if err != nil {
+			return err
+		}
+		defer cur.Close(ctx)
+		var elem Sweat
+		for cur.Next(ctx) {
+			err = cur.Decode(&elem)
+			sweats = append(sweats, elem)
+		}
+		if err := cur.Err(); err != nil {
+		}
+		return err
+	})
+	return
+}

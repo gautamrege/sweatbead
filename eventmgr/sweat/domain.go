@@ -18,6 +18,10 @@ type createUpdateResponse struct {
 	Message string
 }
 
+type listResponse struct {
+	Sweats []db.Sweat `json:"sweats"`
+}
+
 func (cr createRequest) Validate() (err error) {
 	if cr.UserId == "" {
 		return errEmptyUserID

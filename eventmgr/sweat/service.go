@@ -10,6 +10,7 @@ import (
 
 type Service interface {
 	create(ctx context.Context, req createRequest) (response createUpdateResponse, err error)
+	list(ctx context.Context) (response listResponse, err error)
 }
 
 type sweatService struct {
@@ -34,11 +35,22 @@ func (cs *sweatService) create(ctx context.Context, c createRequest) (response c
 		Temperature: c.Temperature,
 	})
 	if err != nil {
-		cs.logger.Error("Error creating user", "err", err.Error())
+		cs.logger.Error("Error creating sweat", "err", err.Error())
 		return
 	}
 	response.Sweat = sweat
 	response.Message = "Created Successfully!"
+	return
+}
+
+func (cs *sweatService) list(ctx context.Context) (response listResponse, err error) {
+	sweats, err := cs.store.ListSweats(ctx)
+	if err != nil {
+		cs.logger.Error("Error listing sweats", "err", err.Error())
+		return
+	}
+
+	response.Sweats = sweats
 	return
 }
 
