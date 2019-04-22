@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"github.com/gautamrege/sweatbead/eventmgr/api"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func Create(service Service) http.HandlerFunc {
@@ -33,6 +36,30 @@ func Create(service Service) http.HandlerFunc {
 func List(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		resp, err := service.list(req.Context())
+		if err != nil {
+			api.Error(rw, http.StatusInternalServerError, api.Response{Message: err.Error()})
+			return
+		}
+
+		api.Success(rw, http.StatusOK, resp)
+	})
+}
+
+func FindByID(service Service) http.HandlerFunc {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		vars := mux.Vars(req)
+
+		id, err := primitive.ObjectIDFromHex(vars["sweat_id"])
+		if err != nil {
+			api.Error(rw, http.StatusInternalServerError, api.Response{Message: err.Error()})
+		}
+
+		resp, err := service.findByID(req.Context(), id)
+
+		if err == errNoSweatId {
+			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
+			return
+		}
 		if err != nil {
 			api.Error(rw, http.StatusInternalServerError, api.Response{Message: err.Error()})
 			return

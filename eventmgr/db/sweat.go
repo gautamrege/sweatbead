@@ -7,6 +7,7 @@ import (
 	"github.com/gautamrege/sweatbead/eventmgr/app"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Sweat struct {
@@ -56,5 +57,17 @@ func (s *store) ListSweats(ctx context.Context) (sweats []Sweat, err error) {
 		}
 		return err
 	})
+	return
+}
+
+func (s *store) FindSweatByID(ctx context.Context, sweatID primitive.ObjectID) (sweat Sweat, err error) {
+	collection := app.GetCollection(sweatCollectionName)
+	err = WithDefaultTimeout(ctx, func(ctx context.Context) error {
+		return collection.FindOne(ctx, bson.D{{"_id", sweatID}}).Decode(&sweat)
+	})
+
+	if err == mongo.ErrNoDocuments {
+		return sweat, ErrSweatNotExist
+	}
 	return
 }

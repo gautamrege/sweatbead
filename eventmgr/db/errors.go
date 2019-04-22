@@ -3,5 +3,5 @@ package db
 import "errors"
 
 var (
-	ErrUserNotExist = errors.New("User does not exist in db")
+	ErrSweatNotExist = errors.New("Sweat does not exist in db")
 )

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -17,6 +18,7 @@ const (
 type Storer interface {
 	CreateSweat(ctx context.Context, sweat *Sweat) (sweatInfo Sweat, err error)
 	ListSweats(ctx context.Context) (sweats []Sweat, err error)
+	FindSweatByID(ctx context.Context, sweatID primitive.ObjectID) (sweat Sweat, err error)
 }
 
 type store struct {

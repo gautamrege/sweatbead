@@ -9,4 +9,5 @@ var (
 	errEmptyTimestamp   = errors.New("Timestamp must be present")
 	errEmptyMoisture    = errors.New("Moisture must be present")
 	errEmptyTemperature = errors.New("Temperature must be present")
+	errNoSweatId        = errors.New("Sweat is not present")
 )

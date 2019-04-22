@@ -19,7 +19,11 @@ type createUpdateResponse struct {
 }
 
 type listResponse struct {
-	Sweats []db.Sweat `json:"sweats"`
+	Sweats []db.Sweat //`json:"sweats"`
+}
+
+type findByIDResponse struct {
+	Sweat db.Sweat //`json:"sweat"`
 }
 
 func (cr createRequest) Validate() (err error) {

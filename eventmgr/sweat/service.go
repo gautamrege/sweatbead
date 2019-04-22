@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gautamrege/sweatbead/eventmgr/db"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 )
@@ -11,6 +12,7 @@ import (
 type Service interface {
 	create(ctx context.Context, req createRequest) (response createUpdateResponse, err error)
 	list(ctx context.Context) (response listResponse, err error)
+	findByID(ctx context.Context, sweatID primitive.ObjectID) (response findByIDResponse, err error)
 }
 
 type sweatService struct {
@@ -51,6 +53,22 @@ func (cs *sweatService) list(ctx context.Context) (response listResponse, err er
 	}
 
 	response.Sweats = sweats
+	return
+}
+
+func (cs *sweatService) findByID(ctx context.Context, id primitive.ObjectID) (response findByIDResponse, err error) {
+	sweat, err := cs.store.FindSweatByID(ctx, id)
+	if err == db.ErrSweatNotExist {
+		cs.logger.Error("No sweat present", "err", err.Error())
+		return response, errNoSweatId
+	}
+
+	if err != nil {
+		cs.logger.Error("Error finding sweat", "err", err.Error(), "sweat_id", id)
+		return
+	}
+
+	response.Sweat = sweat
 	return
 }
 
