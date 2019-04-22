@@ -13,9 +13,9 @@ type createRequest struct {
 	Temperature float32 `json:temperature`
 }
 
-type sweatInfo struct {
-	Sweat   db.Sweat //`json:"sweat"`
-	Message string   //`json:"message"`
+type createUpdateResponse struct {
+	Sweat   db.Sweat
+	Message string
 }
 
 func (cr createRequest) Validate() (err error) {
