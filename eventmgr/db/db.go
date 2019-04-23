@@ -19,6 +19,7 @@ type Storer interface {
 	CreateSweat(ctx context.Context, sweat *Sweat) (sweatInfo Sweat, err error)
 	ListSweats(ctx context.Context) (sweats []Sweat, err error)
 	FindSweatByID(ctx context.Context, sweatID primitive.ObjectID) (sweat Sweat, err error)
+	DeleteSweatByID(ctx context.Context, sweatID primitive.ObjectID) (err error)
 }
 
 type store struct {

@@ -71,3 +71,11 @@ func (s *store) FindSweatByID(ctx context.Context, sweatID primitive.ObjectID) (
 	}
 	return
 }
+
+func (s *store) DeleteSweatByID(ctx context.Context, sweatID primitive.ObjectID) (err error) {
+  collection := app.GetCollection("events")
+  _, err = collection.DeleteOne(ctx, bson.D{{"_id", sweatID}})
+  return
+}
+
+

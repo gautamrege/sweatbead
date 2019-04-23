@@ -13,6 +13,7 @@ type Service interface {
 	create(ctx context.Context, req createRequest) (response createUpdateResponse, err error)
 	list(ctx context.Context) (response listResponse, err error)
 	findByID(ctx context.Context, sweatID primitive.ObjectID) (response findByIDResponse, err error)
+	deleteByID(ctx context.Context, id primitive.ObjectID) (err error)
 }
 
 type sweatService struct {
@@ -69,6 +70,15 @@ func (cs *sweatService) findByID(ctx context.Context, id primitive.ObjectID) (re
 	}
 
 	response.Sweat = sweat
+	return
+}
+
+func (cs *sweatService) deleteByID(ctx context.Context, id primitive.ObjectID) (err error) {
+	err = cs.store.DeleteSweatByID(ctx, id)
+	if err != nil {
+		cs.logger.Error("Error deleting sweat", "err", err.Error(), "sweat_id", id)
+		return
+	}
 	return
 }
 

@@ -26,6 +26,7 @@ func initRouter(dep dependencies) (router *mux.Router) {
 	router.HandleFunc("/sweats", sweat.Create(dep.SweatService)).Methods(http.MethodPost).Headers(versionHeader, v1)
 	router.HandleFunc("/sweats", sweat.List(dep.SweatService)).Methods(http.MethodGet).Headers(versionHeader, v1)
 	router.HandleFunc("/sweats/{sweat_id}", sweat.FindByID(dep.SweatService)).Methods(http.MethodGet).Headers(versionHeader, v1)
+	router.HandleFunc("/sweats/{sweat_id}", sweat.DeleteByID(dep.SweatService)).Methods(http.MethodDelete).Headers(versionHeader, v1)
 	return
 }
 
