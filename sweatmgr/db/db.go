@@ -15,11 +15,11 @@ var (
 )
 
 const (
-	user     string = ""
-	password string = ""
+	user     string = "admin"
+	password string = "pass123"
 	host     string = "localhost"
 	port     int32  = 27017
-	name     string = "sampledb"
+	name     string = "sweatdb"
 )
 
 // Singleton instance method accessible from other packages

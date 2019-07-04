@@ -37,7 +37,7 @@ type Sweat struct {
 func (s *Sweat) Create() (err error) {
 	db, err := GetDB()
 	if err != nil {
-		fmt.Println("No Database connection")
+		fmt.Println("No Database connection: ", err)
 		return err
 	}
 

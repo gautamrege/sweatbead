@@ -11,14 +11,6 @@ import (
 )
 
 func main() {
-
-	// Initialize db
-	err, db := db.GetDB()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Db Initialized: ", db)
-
 	// mux router
 	router := service.InitRouter()
 
@@ -28,6 +20,17 @@ func main() {
 
 	port := 33001 // This should be changed to the service port number via argument or environment variable.
 	addr := fmt.Sprintf(":%s", strconv.Itoa(port))
+
+	// Testing DB operation
+	s := db.Sweat{
+		Glucose:         1.3,
+		Chloride:        2.1,
+		Sodium:          1.2,
+		HeartBeat:       72,
+		RoomTemperature: 76,
+	}
+
+	_ = s.Create()
 
 	server.Run(addr)
 
