@@ -16,6 +16,18 @@ type PingResponse struct {
 func pingHandler(rw http.ResponseWriter, req *http.Request) {
 	response := PingResponse{Message: "pong"}
 
+	// Testing: DB operation - start
+	s := db.Sweat{
+		Glucose:          0.01,
+		Chloride:         0.002,
+		Sodium:           0.9,
+		HeartBeat:        72,
+		RoomTemperatureF: 76,
+	}
+
+	_ = s.Create()
+	// Testing: DB operation - end
+
 	status := http.StatusOK
 	respBytes, err := json.Marshal(response)
 	if err != nil {

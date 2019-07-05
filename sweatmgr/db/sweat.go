@@ -28,10 +28,10 @@ type Sweat struct {
 	Calcium   float32 `bson:"calcium" json:"calcium,omitempty"`     // excess indicates exercise / workout
 
 	// Environmental conditions and determining criteria
-	Humidity        float32 `bson:"humidity" json:"humidity,omitempty"`                 // high humidity increseas sweating
-	RoomTemperature float32 `bson:"room_temperature" json:"room_temperature,omitempty"` // cooler room temperature with sweat indicates hyperdidrosis
-	BodyTemperature float32 `bson:"body_temperature" json:"body_temperature,omitempty"` // high body temperature with sweat indicates fever
-	HeartBeat       int32   `bson:"heartbeat" json:"heartbeat,omitempty"`               // sweating without apparent reason is an alarming condition!
+	Humidity         float32 `bson:"humidity" json:"humidity,omitempty"`                 // high humidity increseas sweating
+	RoomTemperatureF float32 `bson:"room_temperature" json:"room_temperature,omitempty"` // cooler room temperature with sweat indicates hyperdidrosis
+	BodyTemperatureF float32 `bson:"body_temperature" json:"body_temperature,omitempty"` // high body temperature with sweat indicates fever
+	HeartBeat        int32   `bson:"heartbeat" json:"heartbeat,omitempty"`               // sweating without apparent reason is an alarming condition!
 }
 
 func (s *Sweat) Create() (err error) {
