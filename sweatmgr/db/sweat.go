@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"time"
@@ -55,6 +56,34 @@ func (s *Sweat) Create() (err error) {
 
 func (s *Sweat) Delete() (err error) {
 	return
+}
+
+func ListAllSweat() (sweats []Sweat, err error) {
+	db, err := GetDB()
+	if err != nil {
+		fmt.Println("No Database connection: ", err)
+		return
+	}
+
+	collection := db.Collection(SWEAT_TABLE)
+	ctx := context.TODO()
+	cur, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		return
+	}
+	defer cur.Close(ctx)
+
+	var elem Sweat
+	for cur.Next(ctx) {
+		err = cur.Decode(&elem)
+		sweats = append(sweats, elem)
+	}
+	if err = cur.Err(); err != nil {
+		fmt.Printf("Error in listing data: ", err)
+		return
+	}
+	return
+
 }
 
 func GetSweatByID(id string) (s Sweat, err error) {

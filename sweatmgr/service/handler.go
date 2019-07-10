@@ -60,3 +60,28 @@ func createSweatHandler(rw http.ResponseWriter, req *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	rw.WriteHeader(status)
 }
+
+func getSweatSamplesHandler(rw http.ResponseWriter, req *http.Request) {
+	status := http.StatusOK
+	sweats, err := db.ListAllSweat()
+	if err != nil {
+		fmt.Println("Error fetching data", err)
+		status = http.StatusInternalServerError
+	}
+
+	respBytes, err := json.Marshal(sweats)
+	if err != nil {
+		fmt.Println("Error marshaling data", err)
+		status = http.StatusInternalServerError
+	}
+	rw.Header().Add("Content-Type", "application/json")
+	rw.WriteHeader(status)
+	rw.Write(respBytes)
+
+}
+
+func getSweatByIdHandler(rw http.ResponseWriter, req *http.Request) {
+}
+
+func getSweatByUserIdHandler(rw http.ResponseWriter, req *http.Request) {
+}
