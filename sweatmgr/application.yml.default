@@ -1,0 +1,10 @@
+APP_NAME: "sweatmgr"
+APP_PORT: "33001"
+
+DB_DRIVER: "mongodb"
+DB_HOST: "localhost"
+DB_PORT: 27017
+DB_NAME: "sweatdb"
+DB_USER: "admin"
+DB_PASSWORD: "pass123"
+DB_AUTH_MECH: "SCRAM-SHA-1"
