@@ -7,10 +7,17 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gautamrege/packt/sweatbead/sweatmgr/config"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/db"
 )
 
+func Init() {
+	config.Load()
+}
+
 func TestCreateSweat(t *testing.T) {
+	Init()
+
 	var jsonStr = []byte(`{ "glucose": 1.12, "sodium": 0.98, "chloride": 0.003 }`)
 
 	req, err := http.NewRequest("POST", "/entry", bytes.NewBuffer(jsonStr))
@@ -28,6 +35,8 @@ func TestCreateSweat(t *testing.T) {
 }
 
 func TestSweatSamples(t *testing.T) {
+	Init()
+
 	req, err := http.NewRequest("GET", "/sweat_samples", nil)
 	if err != nil {
 		t.Fatal(err)
