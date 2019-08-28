@@ -2,10 +2,10 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/db"
+	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 )
 
 type PingResponse struct {
@@ -50,7 +50,7 @@ func createSweatHandler(rw http.ResponseWriter, req *http.Request) {
 		status = http.StatusInternalServerError
 		panic(err)
 	}
-	fmt.Println(s)
+	logger.Get().Info(s)
 	err = s.Create()
 	if err != nil {
 		status = http.StatusInternalServerError
@@ -65,13 +65,13 @@ func getSweatSamplesHandler(rw http.ResponseWriter, req *http.Request) {
 	status := http.StatusOK
 	sweats, err := db.ListAllSweat()
 	if err != nil {
-		fmt.Println("Error fetching data", err)
+		logger.Get().Info("Error fetching data", err)
 		status = http.StatusInternalServerError
 	}
 
 	respBytes, err := json.Marshal(sweats)
 	if err != nil {
-		fmt.Println("Error marshaling data", err)
+		logger.Get().Info("Error marshaling data", err)
 		status = http.StatusInternalServerError
 	}
 	rw.Header().Add("Content-Type", "application/json")

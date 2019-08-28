@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/config"
+	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 )
 
 var (
@@ -17,11 +18,7 @@ var (
 )
 
 // Singleton instance method accessible from other packages
-func GetDB() (db *mongo.Database, err error) {
-	if db != nil {
-		return
-	}
-
+func Init() {
 	user := config.ReadEnvString("DB_USER")
 	host := config.ReadEnvString("DB_HOST")
 	port := config.ReadEnvInt("DB_PORT")
@@ -32,6 +29,7 @@ func GetDB() (db *mongo.Database, err error) {
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
+		logger.Get().Fatal("Cannot initialize database")
 		return
 	}
 
@@ -40,16 +38,27 @@ func GetDB() (db *mongo.Database, err error) {
 
 	err = client.Connect(ctx)
 	if err != nil {
+		logger.Get().Fatal("Cannot initialize database context")
 		return
 	}
 
 	err = client.Ping(ctx, readpref.Primary())
 
 	if err != nil {
+		logger.Get().Fatal("Cannot connect to database")
 		return
 	}
 
-	fmt.Println("Connected To MongoDB")
+	logger.Get().Info("Connected To MongoDB")
 	db = client.Database(name)
 	return
+}
+
+func Get() *mongo.Database {
+	if db != nil {
+		logger.Get().Fatal("Database not initialized")
+		return nil
+	}
+
+	return db
 }

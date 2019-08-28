@@ -2,11 +2,11 @@ package db
 
 import (
 	"context"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 	"time"
 )
 
@@ -36,21 +36,15 @@ type Sweat struct {
 }
 
 func (s *Sweat) Create() (err error) {
-	db, err := GetDB()
-	if err != nil {
-		fmt.Println("No Database connection: ", err)
-		return err
-	}
-
 	s.CreatedAt = time.Now()
 	collection := db.Collection(SWEAT_TABLE)
 	_, err = collection.InsertOne(context.TODO(), s)
 	if err != nil {
-		fmt.Printf("Error inserting sweat: %v", s)
+		logger.Get().Infof("Error inserting sweat: %v", s)
 		return
 	}
 
-	fmt.Println("Inserted sweat into collection")
+	logger.Get().Info("Inserted sweat into collection")
 	return
 }
 
@@ -59,12 +53,6 @@ func (s *Sweat) Delete() (err error) {
 }
 
 func ListAllSweat() (sweats []Sweat, err error) {
-	db, err := GetDB()
-	if err != nil {
-		fmt.Println("No Database connection: ", err)
-		return
-	}
-
 	collection := db.Collection(SWEAT_TABLE)
 	ctx := context.TODO()
 	cur, err := collection.Find(ctx, bson.D{})
@@ -79,7 +67,7 @@ func ListAllSweat() (sweats []Sweat, err error) {
 		sweats = append(sweats, elem)
 	}
 	if err = cur.Err(); err != nil {
-		fmt.Printf("Error in listing data: ", err)
+		logger.Get().Infof("Error in listing data: ", err)
 		return
 	}
 	return
