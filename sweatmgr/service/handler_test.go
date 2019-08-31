@@ -9,10 +9,13 @@ import (
 
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/config"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/db"
+	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 )
 
 func Init() {
 	config.Load()
+	logger.Init()
+	db.Init()
 }
 
 func TestCreateSweat(t *testing.T) {
