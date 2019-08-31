@@ -6,39 +6,59 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 	"time"
+
+	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 )
 
 const SWEAT_TABLE string = "sweat" // the collection name
+const USER_TABLE string = "users"  // the collection name
 
 type Sweat struct {
 	// Database specific fields.
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	UserID    primitive.ObjectID `bson:"userid,omitempty" json:"userid"`
+	UserID    primitive.ObjectID `bson:"userid,omitempty" json:"UserID"`
 	CreatedAt time.Time          `bson:"created_at"`
 
 	// Potential disease Diagnosis
-	Glucose  float32 `bson:"glucose" json:"glucose,omitempty"`   // excess indicates diabetes
-	Chloride float32 `bson:"chloride" json:"chloride,omitempty"` // excess indicates cystic fibrosis
+	Glucose  float32 `bson:"glucose" json:"Glucose,omitempty"`   // excess indicates diabetes
+	Chloride float32 `bson:"chloride" json:"Chloride,omitempty"` // excess indicates cystic fibrosis
 
 	// Electrolytes
-	Sodium    float32 `bson:"sodium" json:"sodium,omitempty"`
-	Potassium float32 `bson:"potassium" json:"potassium,omitempty"` // excess indicates exercise / workout
-	Magnesium float32 `bson:"magnesium" json:"magnesium,omitempty"` // excess indicates exercise / workout
-	Calcium   float32 `bson:"calcium" json:"calcium,omitempty"`     // excess indicates exercise / workout
+	Sodium    float32 `bson:"sodium" json:"Sodium,omitempty"`
+	Potassium float32 `bson:"potassium" json:"Potassium,omitempty"` // excess indicates exercise / workout
+	Magnesium float32 `bson:"magnesium" json:"Magnesium,omitempty"` // excess indicates exercise / workout
+	Calcium   float32 `bson:"calcium" json:"Calcium,omitempty"`     // excess indicates exercise / workout
 
 	// Environmental conditions and determining criteria
-	Humidity         float32 `bson:"humidity" json:"humidity,omitempty"`                 // high humidity increseas sweating
-	RoomTemperatureF float32 `bson:"room_temperature" json:"room_temperature,omitempty"` // cooler room temperature with sweat indicates hyperdidrosis
-	BodyTemperatureF float32 `bson:"body_temperature" json:"body_temperature,omitempty"` // high body temperature with sweat indicates fever
-	HeartBeat        int32   `bson:"heartbeat" json:"heartbeat,omitempty"`               // sweating without apparent reason is an alarming condition!
+	Humidity         float32 `bson:"humidity" json:"Humidity,omitempty"`                // high humidity increseas sweating
+	RoomTemperatureF float32 `bson:"room_temperature" json:"RoomTemperature,omitempty"` // cooler room temperature with sweat indicates hyperdidrosis
+	BodyTemperatureF float32 `bson:"body_temperature" json:"BodyTemperature,omitempty"` // high body temperature with sweat indicates fever
+	HeartBeat        int32   `bson:"heartbeat" json:"HeartBeat,omitempty"`              // sweating without apparent reason is an alarming condition!
 }
 
-func (s *Sweat) Create() (err error) {
+func (s *Sweat) Create(ctx context.Context) (err error) {
+	var tempUserID primitive.ObjectID
+
+	userid := ""
+	if ctx.Value("UserID") != nil { // verify it exists
+		userid = ctx.Value("UserID").(string)
+	}
+
+	if userid == "" {
+		logger.Get().Error("User not specified in context")
+		//return errors.New("User not found")
+
+		/* FIXME: Temporary Fix: Generate UserID */
+		tempUserID = primitive.NewObjectID()
+	}
+
+	// TODO: Lookup User in DB or another microservice!
+
+	s.UserID = tempUserID
 	s.CreatedAt = time.Now()
 	collection := db.Collection(SWEAT_TABLE)
-	_, err = collection.InsertOne(context.TODO(), s)
+	_, err = collection.InsertOne(ctx, s)
 	if err != nil {
 		logger.Get().Infof("Error inserting sweat: %v", s)
 		return
