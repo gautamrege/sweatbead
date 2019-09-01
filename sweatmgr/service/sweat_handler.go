@@ -8,6 +8,12 @@ import (
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 )
 
+// @Title createSweatHandler
+// @Description create sweat entry for given user
+// @Accept  json
+// @Success 200 {object}
+// @Failure 400 {object}
+// @Router /sweat [post]
 func createSweatHandler(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 

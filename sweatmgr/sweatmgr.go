@@ -1,5 +1,8 @@
 package main
 
+// @APITitle SweatBead API
+// @APIDescription SweatBead API for Microservices in Go and MongoDB!
+
 import (
 	"fmt"
 	"strconv"

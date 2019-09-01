@@ -14,6 +14,8 @@ require (
 )
 
 replace (
+	github.com/gautamrege/packt/sweatbead/sweatmgr/config => /Users/gautam/work/sweatbead/sweatmgr/config
 	github.com/gautamrege/packt/sweatbead/sweatmgr/db => /Users/gautam/work/sweatbead/sweatmgr/db
+	github.com/gautamrege/packt/sweatbead/sweatmgr/logger => /Users/gautam/work/sweatbead/sweatmgr/logger
 	github.com/gautamrege/packt/sweatbead/sweatmgr/service => /Users/gautam/work/sweatbead/sweatmgr/service
 )
