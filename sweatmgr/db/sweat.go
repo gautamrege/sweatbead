@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,7 +13,6 @@ import (
 )
 
 const SWEAT_TABLE string = "sweat" // the collection name
-const USER_TABLE string = "users"  // the collection name
 
 type Sweat struct {
 	// Database specific fields.
@@ -38,8 +38,6 @@ type Sweat struct {
 }
 
 func (s *Sweat) Create(ctx context.Context) (err error) {
-	var tempUserID primitive.ObjectID
-
 	userid := ""
 	if ctx.Value("UserID") != nil { // verify it exists
 		userid = ctx.Value("UserID").(string)
@@ -47,15 +45,23 @@ func (s *Sweat) Create(ctx context.Context) (err error) {
 
 	if userid == "" {
 		logger.Get().Error("User not specified in context")
-		//return errors.New("User not found")
-
-		/* FIXME: Temporary Fix: Generate UserID */
-		tempUserID = primitive.NewObjectID()
+		return errors.New("User not found")
 	}
 
-	// TODO: Lookup User in DB or another microservice!
+	objID, err := primitive.ObjectIDFromHex(userid)
+	if err != nil {
+		logger.Get().Error("UserID is invalid")
+		return errors.New("User not found")
+	}
 
-	s.UserID = tempUserID
+	var user User
+	err = db.Collection(USERS_TABLE).FindOne(ctx, bson.D{{"_id", objID}}).Decode(&user)
+	if err != nil {
+		logger.Get().Error("User not found in DB")
+		return err
+	}
+
+	s.UserID = user.ID
 	s.CreatedAt = time.Now()
 	collection := db.Collection(SWEAT_TABLE)
 	_, err = collection.InsertOne(ctx, s)
