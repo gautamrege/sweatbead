@@ -23,7 +23,6 @@ func createUserHandler(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	logger.Get().Info(s)
 
 	err = s.Create(req.Context())
 	if err != nil {

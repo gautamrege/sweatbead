@@ -27,6 +27,16 @@ func (u *User) Create(ctx context.Context) (err error) {
 	return
 }
 
+func GetUserByID(ctx context.Context, userID primitive.ObjectID) (user User, err error) {
+	err = db.Collection(USERS_TABLE).FindOne(ctx, bson.D{{"_id", userID}}).Decode(&user)
+	if err != nil {
+		logger.Get().Error("User not found in DB")
+		return
+	}
+
+	return
+}
+
 func ListAllUsers(ctx context.Context) (users []User, err error) {
 	collection := db.Collection(USERS_TABLE)
 	cur, err := collection.Find(ctx, bson.D{})

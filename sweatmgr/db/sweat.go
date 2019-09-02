@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -38,27 +37,9 @@ type Sweat struct {
 }
 
 func (s *Sweat) Create(ctx context.Context) (err error) {
-	userid := ""
-	if ctx.Value("UserID") != nil { // verify it exists
-		userid = ctx.Value("UserID").(string)
-	}
-
-	if userid == "" {
-		logger.Get().Error("User not specified in context")
-		return errors.New("User not found")
-	}
-
-	objID, err := primitive.ObjectIDFromHex(userid)
+	user, err := GetUserByID(ctx, userIDFromContext(ctx))
 	if err != nil {
-		logger.Get().Error("UserID is invalid")
-		return errors.New("User not found")
-	}
-
-	var user User
-	err = db.Collection(USERS_TABLE).FindOne(ctx, bson.D{{"_id", objID}}).Decode(&user)
-	if err != nil {
-		logger.Get().Error("User not found in DB")
-		return err
+		return
 	}
 
 	s.UserID = user.ID
@@ -97,13 +78,31 @@ func ListAllSweat() (sweats []Sweat, err error) {
 		return
 	}
 	return
-
 }
 
-func GetSweatByID(id string) (s Sweat, err error) {
-	return
-}
+func ListUserSweat(ctx context.Context) (sweats []Sweat, err error) {
+	user, err := GetUserByID(ctx, userIDFromContext(ctx))
+	if err != nil {
+		return
+	}
 
-func GetSweatByTime(start, end time.Time) (s []Sweat, err error) {
+	filter := bson.D{
+		{"userid", user.ID},
+	}
+	cur, err := db.Collection(SWEAT_TABLE).Find(ctx, filter)
+	if err != nil {
+		return
+	}
+	defer cur.Close(ctx)
+
+	var elem Sweat
+	for cur.Next(ctx) {
+		err = cur.Decode(&elem)
+		sweats = append(sweats, elem)
+	}
+	if err = cur.Err(); err != nil {
+		logger.Get().Infof("Error in listing data: ", err)
+		return
+	}
 	return
 }

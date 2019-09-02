@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -61,4 +62,24 @@ func Get() *mongo.Database {
 	}
 
 	return db
+}
+
+func userIDFromContext(ctx context.Context) (userID primitive.ObjectID) {
+	userid := ""
+	if ctx.Value("UserID") != nil { // verify it exists
+		userid = ctx.Value("UserID").(string)
+	}
+
+	if userid == "" {
+		logger.Get().Error("User not specified in context")
+		return
+	}
+
+	userID, err := primitive.ObjectIDFromHex(userid)
+	if err != nil {
+		logger.Get().Errorf("UserID is invalid: %v", err)
+		return
+	}
+
+	return
 }
