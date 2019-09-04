@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package api;
+
+import "google/protobuf/timestamp.proto";
+
+message Sweat {
+	google.protobuf.Timestamp created_at = 1;
+        float glucose = 2;
+        float chloride = 3;
+        float sodium = 4;
+        float potassium = 5;
+        float magnesium = 6;
+        float calcium = 7;
+        float humidity = 8;
+        float room_temperature = 9;
+        float body_temperature = 10;
+        int32 heartbeat = 11;
+}
+
+message SweatStatsRequest {
+	string userid = 1;
+}
+
+message SweatStatsResponse {
+	string userid = 1;
+	repeated Sweat sweat = 2;
+}
+
+service Api {
+	rpc GetSweatStats(SweatStatsRequest) returns (SweatStatsResponse) {}
+}
