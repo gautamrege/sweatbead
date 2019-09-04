@@ -12,11 +12,12 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	"github.com/gautamrege/packt/sweatbead/sweatmgr/api"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/config"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/db"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/service"
+
+	pb "github.com/gautamrege/packt/sweatbead/proto/sweatmgr"
 )
 
 func main() {
@@ -67,7 +68,7 @@ func GRPCServe() {
 	grpcServer := grpc.NewServer(opts...)
 
 	s := service.GrpcServer{}
-	api.RegisterApiServer(grpcServer, &s)
+	pb.RegisterSweatMgrServer(grpcServer, &s)
 
 	logger.Get().Infof("Listening for gRPC on %s:%d", host, port)
 

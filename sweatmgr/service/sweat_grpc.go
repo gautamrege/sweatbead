@@ -5,7 +5,7 @@ import (
 
 	google_protobuf "github.com/golang/protobuf/ptypes"
 
-	"github.com/gautamrege/packt/sweatbead/sweatmgr/api"
+	pb "github.com/gautamrege/packt/sweatbead/proto/sweatmgr"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/db"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 )
@@ -13,7 +13,7 @@ import (
 type GrpcServer struct {
 }
 
-func (s *GrpcServer) GetSweatStats(ctx context.Context, req *api.SweatStatsRequest) (res *api.SweatStatsResponse, err error) {
+func (s *GrpcServer) GetSweatStats(ctx context.Context, req *pb.SweatStatsRequest) (res *pb.SweatStatsResponse, err error) {
 	ctx = context.WithValue(ctx, "UserID", req.Userid)
 
 	sweats, err := db.ListUserSweat(ctx)
@@ -21,13 +21,13 @@ func (s *GrpcServer) GetSweatStats(ctx context.Context, req *api.SweatStatsReque
 		logger.Get().Info("Error fetching data", err)
 	}
 
-	res = &api.SweatStatsResponse{
-		Sweat: []*api.Sweat{},
+	res = &pb.SweatStatsResponse{
+		Sweat: []*pb.Sweat{},
 	}
 
 	res.Userid = req.Userid
 	for _, sw := range sweats {
-		tmp := api.Sweat{
+		tmp := pb.Sweat{
 			Glucose:         sw.Glucose,
 			Chloride:        sw.Chloride,
 			Sodium:          sw.Sodium,

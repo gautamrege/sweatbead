@@ -3,6 +3,7 @@ module github.com/gautamrege/packt/sweatbead/sweatmgr
 go 1.12
 
 require (
+	github.com/gautamrege/packt/sweatbead/proto v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.3.1
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/mux v1.7.3
@@ -17,6 +18,7 @@ require (
 )
 
 replace (
+	github.com/gautamrege/packt/sweatbead/proto => /Users/gautam/work/sweatbead/proto
 	github.com/gautamrege/packt/sweatbead/sweatmgr/config => /Users/gautam/work/sweatbead/sweatmgr/config
 	github.com/gautamrege/packt/sweatbead/sweatmgr/db => /Users/gautam/work/sweatbead/sweatmgr/db
 	github.com/gautamrege/packt/sweatbead/sweatmgr/logger => /Users/gautam/work/sweatbead/sweatmgr/logger

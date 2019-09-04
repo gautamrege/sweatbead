@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package api;
+package sweatmgr;
 
 import "google/protobuf/timestamp.proto";
 
@@ -27,6 +27,6 @@ message SweatStatsResponse {
 	repeated Sweat sweat = 2;
 }
 
-service Api {
+service SweatMgr {
 	rpc GetSweatStats(SweatStatsRequest) returns (SweatStatsResponse) {}
 }
