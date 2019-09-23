@@ -26,8 +26,12 @@ func main() {
 	logger.Init()
 	db.Init()
 
+	deps := service.Dependencies{
+		DB: db.GetStorer(db.Get()),
+	}
+
 	// mux router
-	router := service.InitRouter()
+	router := service.InitRouter(deps)
 
 	// init web server
 	server := negroni.Classic()

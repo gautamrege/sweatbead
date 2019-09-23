@@ -18,6 +18,14 @@ var (
 	db *mongo.Database
 )
 
+type Storer interface {
+	ListUserSweat(context.Context) ([]Sweat, error)
+}
+
+type MongoDBStorer struct {
+	DB *mongo.Database
+}
+
 // Singleton instance method accessible from other packages
 func Init() {
 	user := config.ReadEnvString("DB_USER")
@@ -56,12 +64,16 @@ func Init() {
 }
 
 func Get() *mongo.Database {
-	if db != nil {
+	if db == nil {
 		logger.Get().Fatal("Database not initialized")
 		return nil
 	}
 
 	return db
+}
+
+func GetStorer(db *mongo.Database) Storer {
+	return &MongoDBStorer{db}
 }
 
 func userIDFromContext(ctx context.Context) (userID primitive.ObjectID) {

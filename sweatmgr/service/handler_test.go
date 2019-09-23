@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,9 +11,13 @@ import (
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/config"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/db"
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-var testUser db.User
+var (
+	testUser db.User
+)
 
 func init() {
 	config.Load()
@@ -110,6 +115,14 @@ func TestSweatSamples(t *testing.T) {
 }
 
 func TestUserSweat(t *testing.T) {
+	mockDB := db.MockDB{}
+	deps := Dependencies{
+		DB: &mockDB,
+	}
+
+	dummy := []db.Sweat{db.Sweat{Glucose: 0.92}}
+	mockDB.On("ListUserSweat", mock.Anything).Return(dummy, nil)
+
 	req, err := http.NewRequest("GET", "/user/sweat", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -117,21 +130,40 @@ func TestUserSweat(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("UserID", testUser.ID.Hex())
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(getSweatByUserIdHandler)
+	handler := http.HandlerFunc(getSweatByUserIdHandler(deps))
 	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+
+	assert.Equal(t, http.StatusOK, rr.Code)
 
 	var sweats []db.Sweat
-
 	err = json.Unmarshal([]byte(rr.Body.String()), &sweats)
+	assert.Nil(t, err)
+
+	assert.ElementsMatch(t, sweats, dummy)
+	mockDB.AssertExpectations(t)
+}
+
+func TestUserSweatInvalid(t *testing.T) {
+	mockDB := db.MockDB{}
+	deps := Dependencies{
+		DB: &mockDB,
+	}
+
+	dummy := []db.Sweat{}
+	mockDB.On("ListUserSweat", mock.Anything).Return(dummy, errors.New("No DB"))
+
+	req, err := http.NewRequest("GET", "/user/sweat", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("UserID", testUser.ID.Hex())
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(getSweatByUserIdHandler(deps))
+	handler.ServeHTTP(rr, req)
 
-	if len(sweats) < 1 {
-		t.Errorf("No sweat samples. Expected at least 1")
-	}
+	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+
+	// ensure that all the mock methods are called
+	mockDB.AssertExpectations(t)
 }

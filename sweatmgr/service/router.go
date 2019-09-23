@@ -13,7 +13,7 @@ const (
 )
 
 /* The routing mechanism. Mux helps us define handler functions and the access methods */
-func InitRouter() (router *mux.Router) {
+func InitRouter(deps Dependencies) (router *mux.Router) {
 
 	router = mux.NewRouter()
 
@@ -25,7 +25,7 @@ func InitRouter() (router *mux.Router) {
 
 	router.HandleFunc("/users", getUsersHandler).Methods(http.MethodGet).Headers(versionHeader, v1)
 	router.HandleFunc("/user", createUserHandler).Methods(http.MethodPost).Headers(versionHeader, v1)
-	router.HandleFunc("/user/sweat", getSweatByUserIdHandler).Methods(http.MethodGet).Headers(versionHeader, v1)
+	router.HandleFunc("/user/sweat", getSweatByUserIdHandler(deps)).Methods(http.MethodGet).Headers(versionHeader, v1)
 	router.HandleFunc("/sweat", createSweatHandler).Methods(http.MethodPost).Headers(versionHeader, v1)
 	router.HandleFunc("/sweat_samples", getSweatSamplesHandler).Methods(http.MethodGet).Headers(versionHeader, v1)
 

@@ -106,3 +106,30 @@ func ListUserSweat(ctx context.Context) (sweats []Sweat, err error) {
 	}
 	return
 }
+
+func (mds *MongoDBStorer) ListUserSweat(ctx context.Context) (sweats []Sweat, err error) {
+	user, err := GetUserByID(ctx, userIDFromContext(ctx))
+	if err != nil {
+		return
+	}
+
+	filter := bson.D{
+		{"userid", user.ID},
+	}
+	cur, err := mds.DB.Collection(SWEAT_TABLE).Find(ctx, filter)
+	if err != nil {
+		return
+	}
+	defer cur.Close(ctx)
+
+	var elem Sweat
+	for cur.Next(ctx) {
+		err = cur.Decode(&elem)
+		sweats = append(sweats, elem)
+	}
+	if err = cur.Err(); err != nil {
+		logger.Get().Infof("Error in listing data: ", err)
+		return
+	}
+	return
+}

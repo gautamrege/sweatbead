@@ -55,23 +55,28 @@ func getSweatSamplesHandler(rw http.ResponseWriter, req *http.Request) {
 
 }
 
-func getSweatByUserIdHandler(rw http.ResponseWriter, req *http.Request) {
-	req = WithUserContext(req)
+// In this function, we need to call the database and for a scalable microservice,
+// we will also need to call other microservices! So, we need to have handle multiple
+// dependencies
+func getSweatByUserIdHandler(deps Dependencies) http.HandlerFunc {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		req = WithUserContext(req)
 
-	sweats, err := db.ListUserSweat(req.Context())
-	if err != nil {
-		logger.Get().Info("Error fetching data", err)
-		rw.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		sweats, err := deps.DB.ListUserSweat(req.Context())
+		if err != nil {
+			logger.Get().Info("Error fetching data", err)
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	respBytes, err := json.Marshal(sweats)
-	if err != nil {
-		logger.Get().Info("Error marshaling data", err)
-		rw.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	rw.Header().Add("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusOK)
-	rw.Write(respBytes)
+		respBytes, err := json.Marshal(sweats)
+		if err != nil {
+			logger.Get().Info("Error marshaling data", err)
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		rw.Header().Add("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
+		rw.Write(respBytes)
+	})
 }
