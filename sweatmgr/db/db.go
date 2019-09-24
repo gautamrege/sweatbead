@@ -19,6 +19,9 @@ var (
 )
 
 type Storer interface {
+	Create(context.Context, Sweat) error
+	Delete(context.Context, string) error
+	ListAllSweat(context.Context) ([]Sweat, error)
 	ListUserSweat(context.Context) ([]Sweat, error)
 }
 

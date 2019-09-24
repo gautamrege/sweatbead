@@ -36,32 +36,12 @@ type Sweat struct {
 	HeartBeat        int32   `bson:"heartbeat" json:"HeartBeat,omitempty"`              // sweating without apparent reason is an alarming condition!
 }
 
-func (s *Sweat) Create(ctx context.Context) (err error) {
-	user, err := GetUserByID(ctx, userIDFromContext(ctx))
-	if err != nil {
-		return
-	}
-
-	s.UserID = user.ID
-	s.CreatedAt = time.Now()
-	collection := db.Collection(SWEAT_TABLE)
-	_, err = collection.InsertOne(ctx, s)
-	if err != nil {
-		logger.Get().Infof("Error inserting sweat: %v", s)
-		return
-	}
-
-	logger.Get().Info("Inserted sweat into collection")
+func (mds *MongoDBStorer) Delete(ctx context.Context, id string) (err error) {
 	return
 }
 
-func (s *Sweat) Delete() (err error) {
-	return
-}
-
-func ListAllSweat() (sweats []Sweat, err error) {
-	collection := db.Collection(SWEAT_TABLE)
-	ctx := context.TODO()
+func (mds *MongoDBStorer) ListAllSweat(ctx context.Context) (sweats []Sweat, err error) {
+	collection := mds.DB.Collection(SWEAT_TABLE)
 	cur, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		return
@@ -80,30 +60,22 @@ func ListAllSweat() (sweats []Sweat, err error) {
 	return
 }
 
-func ListUserSweat(ctx context.Context) (sweats []Sweat, err error) {
+func (mds *MongoDBStorer) Create(ctx context.Context, s Sweat) (err error) {
 	user, err := GetUserByID(ctx, userIDFromContext(ctx))
 	if err != nil {
 		return
 	}
 
-	filter := bson.D{
-		{"userid", user.ID},
-	}
-	cur, err := db.Collection(SWEAT_TABLE).Find(ctx, filter)
+	s.UserID = user.ID
+	s.CreatedAt = time.Now()
+	collection := mds.DB.Collection(SWEAT_TABLE)
+	_, err = collection.InsertOne(ctx, s)
 	if err != nil {
+		logger.Get().Infof("Error inserting sweat: %v", s)
 		return
 	}
-	defer cur.Close(ctx)
 
-	var elem Sweat
-	for cur.Next(ctx) {
-		err = cur.Decode(&elem)
-		sweats = append(sweats, elem)
-	}
-	if err = cur.Err(); err != nil {
-		logger.Get().Infof("Error in listing data: ", err)
-		return
-	}
+	logger.Get().Info("Inserted sweat into collection")
 	return
 }
 

@@ -26,8 +26,8 @@ func InitRouter(deps Dependencies) (router *mux.Router) {
 	router.HandleFunc("/users", getUsersHandler).Methods(http.MethodGet).Headers(versionHeader, v1)
 	router.HandleFunc("/user", createUserHandler).Methods(http.MethodPost).Headers(versionHeader, v1)
 	router.HandleFunc("/user/sweat", getSweatByUserIdHandler(deps)).Methods(http.MethodGet).Headers(versionHeader, v1)
-	router.HandleFunc("/sweat", createSweatHandler).Methods(http.MethodPost).Headers(versionHeader, v1)
-	router.HandleFunc("/sweat_samples", getSweatSamplesHandler).Methods(http.MethodGet).Headers(versionHeader, v1)
+	router.HandleFunc("/sweat", createSweatHandler(deps)).Methods(http.MethodPost).Headers(versionHeader, v1)
+	router.HandleFunc("/sweat_samples", getSweatSamplesHandler(deps)).Methods(http.MethodGet).Headers(versionHeader, v1)
 
 	return
 }

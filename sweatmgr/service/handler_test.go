@@ -15,10 +15,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var (
-	testUser db.User
-)
-
 func init() {
 	config.Load()
 	logger.Init()
@@ -67,51 +63,44 @@ func TestFetchUsers(t *testing.T) {
 		t.Errorf("No sweat samples. Expected at least 1")
 	}
 
-	testUser = users[len(users)-1]
+}
+
+func makeHTTPcall(method, url, body string, handler http.HandlerFunc) (rr *httptest.ResponseRecorder) {
+	req, _ := http.NewRequest(method, url, bytes.NewBuffer([]byte(body)))
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	return
 }
 
 func TestCreateSweat(t *testing.T) {
-	var jsonStr = []byte(`{ "glucose": 1.12, "sodium": 0.98, "chloride": 0.003 }`)
-
-	req, err := http.NewRequest("POST", "/sweat", bytes.NewBuffer(jsonStr))
-	if err != nil {
-		t.Fatal(err)
+	mockDB := db.MockDB{}
+	deps := Dependencies{
+		DB: &mockDB,
 	}
-	req.Header.Set("Content-Type", "application/json")
+	mockDB.On("Create", mock.Anything, mock.Anything).Return(nil)
 
-	req.Header.Set("UserID", testUser.ID.Hex())
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(createSweatHandler)
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+	var jsonStr = `{ "glucose": 1.12, "sodium": 0.98, "chloride": 0.003 }`
+	rr := makeHTTPcall("POST", "/sweat", jsonStr, createSweatHandler(deps))
+	assert.Equal(t, http.StatusOK, rr.Code)
 }
 
 func TestSweatSamples(t *testing.T) {
-	req, err := http.NewRequest("GET", "/sweat_samples", nil)
-	if err != nil {
-		t.Fatal(err)
+	mockDB := db.MockDB{}
+	deps := Dependencies{
+		DB: &mockDB,
 	}
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(getSweatSamplesHandler)
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+	dummy := []db.Sweat{db.Sweat{Glucose: 0.92}, db.Sweat{Sodium: 0.12}}
+	mockDB.On("ListAllSweat", mock.Anything).Return(dummy, nil)
+
+	rr := makeHTTPcall("GET", "/sweat_samples", "", getSweatSamplesHandler(deps))
+	assert.Equal(t, http.StatusOK, rr.Code)
 
 	var sweats []db.Sweat
-
-	err = json.Unmarshal([]byte(rr.Body.String()), &sweats)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if len(sweats) < 1 {
-		t.Errorf("No sweat samples. Expected at least 1")
-	}
+	err := json.Unmarshal([]byte(rr.Body.String()), &sweats)
+	assert.Nil(t, err)
+	assert.ElementsMatch(t, sweats, dummy)
+	mockDB.AssertExpectations(t)
 }
 
 func TestUserSweat(t *testing.T) {
@@ -123,22 +112,12 @@ func TestUserSweat(t *testing.T) {
 	dummy := []db.Sweat{db.Sweat{Glucose: 0.92}}
 	mockDB.On("ListUserSweat", mock.Anything).Return(dummy, nil)
 
-	req, err := http.NewRequest("GET", "/user/sweat", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("UserID", testUser.ID.Hex())
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(getSweatByUserIdHandler(deps))
-	handler.ServeHTTP(rr, req)
-
+	rr := makeHTTPcall("GET", "/user/sweat", "", getSweatByUserIdHandler(deps))
 	assert.Equal(t, http.StatusOK, rr.Code)
 
 	var sweats []db.Sweat
-	err = json.Unmarshal([]byte(rr.Body.String()), &sweats)
+	err := json.Unmarshal([]byte(rr.Body.String()), &sweats)
 	assert.Nil(t, err)
-
 	assert.ElementsMatch(t, sweats, dummy)
 	mockDB.AssertExpectations(t)
 }
@@ -152,16 +131,7 @@ func TestUserSweatInvalid(t *testing.T) {
 	dummy := []db.Sweat{}
 	mockDB.On("ListUserSweat", mock.Anything).Return(dummy, errors.New("No DB"))
 
-	req, err := http.NewRequest("GET", "/user/sweat", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("UserID", testUser.ID.Hex())
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(getSweatByUserIdHandler(deps))
-	handler.ServeHTTP(rr, req)
-
+	rr := makeHTTPcall("GET", "/user/sweat", "", getSweatByUserIdHandler(deps))
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 
 	// ensure that all the mock methods are called

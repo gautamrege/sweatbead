@@ -71,7 +71,9 @@ func GRPCServe() {
 	}
 	grpcServer := grpc.NewServer(opts...)
 
-	s := service.GrpcServer{}
+	s := service.GrpcServer{
+		DB: db.GetStorer(db.Get()),
+	}
 	pb.RegisterSweatMgrServer(grpcServer, &s)
 
 	logger.Get().Infof("Listening for gRPC on %s:%d", host, port)

@@ -11,12 +11,13 @@ import (
 )
 
 type GrpcServer struct {
+	DB db.Storer
 }
 
 func (s *GrpcServer) GetSweatStats(ctx context.Context, req *pb.SweatStatsRequest) (res *pb.SweatStatsResponse, err error) {
 	ctx = context.WithValue(ctx, "UserID", req.Userid)
 
-	sweats, err := db.ListUserSweat(ctx)
+	sweats, err := s.DB.ListUserSweat(ctx)
 	if err != nil {
 		logger.Get().Info("Error fetching data", err)
 	}
