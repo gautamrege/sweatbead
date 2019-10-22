@@ -1,0 +1,57 @@
+consumes:
+- application/io.goswagger.examples.todo-list.v1+json
+info:
+  description: API for boilerplate 
+  title: UserMgr
+  version: 1.0.0
+produces:
+- application/io.goswagger.examples.todo-list.v1+json
+schemes:
+- http
+swagger: "2.0"
+paths:
+  /user:
+    post:
+      responses:
+        200:
+          description: create user
+          schema:
+            $ref: "#/definitions/user"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /users:
+    get:
+      responses:
+        200:
+          description: list all users
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/user"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+definitions:
+  user:
+    type: object
+    required:
+      - Name
+      - Device
+    properties:
+      Name:
+        type: string
+      Device:
+        type: string
+  error:
+    type: object
+    required:
+      - message
+    properties:
+      code:
+        type: integer
+        format: int64
+      message:
+        type: string

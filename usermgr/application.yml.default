@@ -1,0 +1,16 @@
+APP_NAME: "usermgr"
+APP_PORT: "33002"
+
+DB_DRIVER: "mongodb"
+DB_HOST: "localhost"
+DB_PORT: 27017
+DB_NAME: "sweatdb"
+DB_USER: "admin"
+DB_PASSWORD: "pass123"
+DB_AUTH_MECH: "SCRAM-SHA-1"
+
+GRPC_HOST: "localhost"
+GRPC_PORT: 33010
+TLS: false
+CERT_FILE: "server.crt"
+KEY_FILE: "server.key"
