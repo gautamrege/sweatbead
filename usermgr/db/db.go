@@ -26,8 +26,9 @@ var (
 )
 
 type Storer interface {
-	// TODO: Specify your database access methods. Eg.
-	// ListAll(context.Context) ([]SomeObj, error)
+	Create(context.Context, User) error
+	ByID(context.Context, string) (User, error)
+	List(context.Context) ([]User, error)
 }
 
 type MongoDBStorer struct {

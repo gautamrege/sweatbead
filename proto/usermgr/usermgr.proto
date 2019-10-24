@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package usermgr;
+
+message User {
+        string id = 2;
+        string name = 3;
+        string device = 4;
+}
+
+message UserRequest {
+	string userid = 1;
+}
+
+message UserResponse {
+	int32 count = 1;
+	repeated User users = 2;
+}
+
+service SweatMgr {
+	rpc GetUser(UserRequest) returns (UserResponse) {}
+	rpc ListUsers(google.protobuf.Empty) returns (UserResponse) {}
+}
