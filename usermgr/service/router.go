@@ -15,7 +15,10 @@ const (
 /* The routing mechanism. Mux helps us define handler functions and the access methods */
 func InitRouter(deps Dependencies) (router *mux.Router) {
 
-	router = mux.NewRouter()
+	root := mux.NewRouter()
+
+	// Make a path prefix that will be assigned to this microservice
+	router = root.PathPrefix("/usermgr").Subrouter()
 
 	// Version 1 API management
 	v1 := fmt.Sprintf("application/vnd.%s.v1", appName)
