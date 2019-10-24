@@ -1,16 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gautamrege/packt/sweatbead/usermgr/db"
-	"github.com/gautamrege/packt/sweatbead/usermgr/logger"
 )
-
-// @grpc - enable when required
-type GrpcServer struct {
-	DB db.Storer
-}
 
 // Create a user
 func createUserHandler(deps Dependencies) http.HandlerFunc {
@@ -25,7 +20,7 @@ func createUserHandler(deps Dependencies) http.HandlerFunc {
 			return
 		}
 
-		err = s.Create(req.Context())
+		err = deps.DB.Create(req.Context(), s)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			return

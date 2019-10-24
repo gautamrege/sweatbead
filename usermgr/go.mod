@@ -17,4 +17,10 @@ require (
 	google.golang.org/grpc v1.23.1
 )
 
-replace github.com/gautamrege/packt/sweatbead/proto => /Users/gautam/work/sweatbead/proto
+replace (
+	github.com/gautamrege/packt/sweatbead/proto => /Users/gautam/work/sweatbead/proto
+	github.com/gautamrege/packt/sweatbead/usermgr/config => /Users/gautam/work/sweatbead/usermgr/config
+	github.com/gautamrege/packt/sweatbead/usermgr/db => /Users/gautam/work/sweatbead/usermgr/db
+	github.com/gautamrege/packt/sweatbead/usermgr/logger => /Users/gautam/work/sweatbead/usermgr/logger
+	github.com/gautamrege/packt/sweatbead/usermgr/service => /Users/gautam/work/sweatbead/usermgr/service
+)

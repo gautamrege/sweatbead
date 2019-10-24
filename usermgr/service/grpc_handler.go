@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	google_protobuf "github.com/golang/protobuf/ptypes"
+	gp_empty "github.com/golang/protobuf/ptypes/empty"
 
 	pb "github.com/gautamrege/packt/sweatbead/proto/usermgr"
 	"github.com/gautamrege/packt/sweatbead/usermgr/db"
@@ -21,29 +21,28 @@ func (s *GrpcServer) GetUser(ctx context.Context, req *pb.UserRequest) (res *pb.
 	}
 
 	res = &pb.UserResponse{
-		Id:     req.Userid,
-		Name:   user.Name,
-		Device: user.Device,
+		Count: 1,
+		Users: []*pb.User{{req.Userid, user.Name, user.Device}},
 	}
 
 	return
 }
 
-func (s *GrpcServer) ListUsers(ctx context.Context, e *google_protobuf.Empty) (res *pb.UserResponse, err error) {
+func (s *GrpcServer) ListUsers(ctx context.Context, e *gp_empty.Empty) (res *pb.UserResponse, err error) {
 	users, err := s.DB.List(ctx)
 	if err != nil {
 		logger.Get().Info("Error fetching data", err)
 	}
 
 	res = &pb.UserResponse{
-		Count: len(users),
+		Count: int32(len(users)),
 		Users: []*pb.User{},
 	}
 
-	res.Userid = req.Userid
+	res.Count = int32(len(users))
 	for _, u := range users {
 		tmp := pb.User{
-			Id:     u.Userid,
+			Id:     u.ID.Hex(),
 			Name:   u.Name,
 			Device: u.Device,
 		}
