@@ -20,11 +20,9 @@ func InitRouter(deps Dependencies) (router *mux.Router) {
 	// Version 1 API management
 	v1 := fmt.Sprintf("application/vnd.%s.v1", appName)
 
-	router.HandleFunc("/ping", pingHandler(deps)).Methods(http.MethodGet).Headers(versionHeader, v1)
+	router.HandleFunc("/user", createUserHandlea(deps)).Methods(http.MethodPost).Headers(versionHeader, v1) // create users
 
-	// TODO: Add Handlers
-	//router.HandleFunc("/users", getUsersHandler(deps)).Methods(http.MethodGet).Headers(versionHeader, v1)
-	//router.HandleFunc("/user", createUserHandlea(deps)).Methods(http.MethodPost).Headers(versionHeader, v1)
+	// Note: Get user(s) will be supported only via gRPC
 
 	return
 }

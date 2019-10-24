@@ -12,17 +12,26 @@ type GrpcServer struct {
 	DB db.Storer
 }
 
-// Sample Handler Func template
-func pingHandler(deps Dependencies) http.HandlerFunc {
+// Create a user
+func createUserHandler(deps Dependencies) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		logger.Get().Info("Received ping")
-		respBytes := []byte(`{ "Message": "pong" }`)
 
-		// Access the database if required
-		// something, err := deps.DB.List(req.Context())
+		decoder := json.NewDecoder(req.Body)
+
+		var s db.User
+		err := decoder.Decode(&s)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		err = s.Create(req.Context())
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
 		rw.Header().Add("Content-Type", "application/json")
 		rw.WriteHeader(http.StatusOK)
-		rw.Write(respBytes)
 	})
 }
