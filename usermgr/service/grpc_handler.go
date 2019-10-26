@@ -15,6 +15,7 @@ type GrpcServer struct {
 }
 
 func (s *GrpcServer) GetUser(ctx context.Context, req *pb.UserRequest) (res *pb.UserResponse, err error) {
+	logger.Get().Info("grpc: Getting user")
 	user, err := s.DB.ByID(ctx, req.Userid)
 	if err != nil {
 		logger.Get().Info("Error fetching data", err)

@@ -8,12 +8,6 @@ import (
 	"github.com/gautamrege/packt/sweatbead/sweatmgr/logger"
 )
 
-// @Title createSweatHandler
-// @Description create sweat entry for given user
-// @Accept  json
-// @Success 200 {object}
-// @Failure 400 {object}
-// @Router /sweat [post]
 func createSweatHandler(deps Dependencies) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		decoder := json.NewDecoder(req.Body)
@@ -22,6 +16,14 @@ func createSweatHandler(deps Dependencies) http.HandlerFunc {
 		err := decoder.Decode(&s)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// Verify this user exists - fetch user from UserMgr service via gRPC
+		_, ok := deps.UserMgr.GetUser(req.Header.Get("UserID"))
+		if ok != nil {
+			logger.Get().Error("User not found")
+			rw.WriteHeader(http.StatusForbidden)
 			return
 		}
 

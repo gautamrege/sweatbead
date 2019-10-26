@@ -14,7 +14,7 @@ import (
 	"github.com/gautamrege/packt/sweatbead/usermgr/logger"
 	"github.com/gautamrege/packt/sweatbead/usermgr/service"
 	// @grpc - Enable
-	// pb "github.com/gautamrege/packt/sweatbead/proto/usermgr"
+	pb "github.com/gautamrege/packt/sweatbead/proto/usermgr"
 )
 
 func main() {
@@ -38,7 +38,7 @@ func main() {
 	addr := fmt.Sprintf(":%s", strconv.Itoa(port))
 
 	// @grpc
-	//go GRPCServe()
+	go GRPCServe()
 	server.Run(addr)
 }
 
@@ -75,7 +75,7 @@ func GRPCServe() {
 	logger.Get().Infof("Grpc config: %v", s)
 
 	// @grpc - Enable after proto file is in place
-	// pb.RegisterSweatMgrServer(grpcServer, &s)
+	pb.RegisterUserMgrServer(grpcServer, &s)
 
 	logger.Get().Infof("Listening for gRPC on %s:%d", host, port)
 
