@@ -19,7 +19,7 @@ message UserResponse {
 	repeated User users = 2;
 }
 
-service SweatMgr {
+service UserMgr {
 	rpc GetUser(UserRequest) returns (UserResponse) {}
 	rpc ListUsers(google.protobuf.Empty) returns (UserResponse) {}
 }

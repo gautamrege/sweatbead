@@ -27,7 +27,8 @@ func main() {
 	db.Init()
 
 	deps := service.Dependencies{
-		DB: db.GetStorer(db.Get()),
+		DB:      db.GetStorer(db.Get()),
+		UserMgr: service.GetUserMgr(),
 	}
 
 	// mux router

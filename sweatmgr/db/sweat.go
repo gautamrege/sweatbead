@@ -61,12 +61,7 @@ func (mds *MongoDBStorer) ListAllSweat(ctx context.Context) (sweats []Sweat, err
 }
 
 func (mds *MongoDBStorer) Create(ctx context.Context, s Sweat) (err error) {
-	user, err := GetUserByID(ctx, userIDFromContext(ctx))
-	if err != nil {
-		return
-	}
-
-	s.UserID = user.ID
+	s.UserID = userIDFromContext(ctx)
 	s.CreatedAt = time.Now()
 	collection := mds.DB.Collection(SWEAT_TABLE)
 	_, err = collection.InsertOne(ctx, s)
