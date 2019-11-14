@@ -65,8 +65,15 @@ func getSweatSamplesHandler(deps Dependencies) http.HandlerFunc {
 // dependencies
 func getSweatByUserIdHandler(deps Dependencies) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		req = WithUserContext(req)
+		// Verify this user exists - fetch user from UserMgr service via gRPC
+		_, ok := deps.UserMgr.GetUser(req.Header.Get("UserID"))
+		if ok != nil {
+			logger.Get().Error("User not found")
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
 
+		req = WithUserContext(req)
 		sweats, err := deps.DB.ListUserSweat(req.Context())
 		if err != nil {
 			logger.Get().Info("Error fetching data", err)

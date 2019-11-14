@@ -75,13 +75,8 @@ func (mds *MongoDBStorer) Create(ctx context.Context, s Sweat) (err error) {
 }
 
 func (mds *MongoDBStorer) ListUserSweat(ctx context.Context) (sweats []Sweat, err error) {
-	user, err := GetUserByID(ctx, userIDFromContext(ctx))
-	if err != nil {
-		return
-	}
-
 	filter := bson.D{
-		{"userid", user.ID},
+		{"userid", userIDFromContext(ctx)},
 	}
 	cur, err := mds.DB.Collection(SWEAT_TABLE).Find(ctx, filter)
 	if err != nil {
