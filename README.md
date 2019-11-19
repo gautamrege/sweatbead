@@ -1,48 +1,21 @@
 ## The Sweat Bead ##
 
-This is an entirely hypothetical attempt to build a scalable platform using microservices. 
-In this example, we don't concentrate on the hardware but only scaling large number of 
-events coming in from pseudo-devices. And what do we measure? *Sweat* :)
+This is an entirely hypothetical attempt to build a platform using differnet microservices. 
+In this example, we don't concentrate on the hardware but only the process of building different 
+microservices incorporating the Single Responsibilty principle.
+
+Did you know that Sweat can be used for various health deductions including diabeties? Well, I have
+still to find a really good sweat analyzer but we shall assume that a sweat-bead is one such device.
 
 ### The Architecture ###
 
-We manage multiple services (also called microservices) to manage a large platform of data,
-alerts and reports. Let's list down the different services 
-
-#### Profile Manager ####
-
-This microservice is responsible for user management:
-
-* Regitration & Login
-* User Profile
-* User Dashboard (prifile data for daily and weekly information)
-
-#### Events Manager ####
-
-This microservice is responsible for all event data:
-
-* Receive event data from the sweat-bead.
-* Process the event data / calculate for alert
-* Store event data persistently 
-* Purge older data
+We manage multiple microservices microservices to manage sweat and user/device data, to provide
+alerts and reports. 
 
 
-#### Notification Manager ####
+The SweatMgr manages all Sweat data.
+The UserMgr manages all user data
+The ReportsMgr is a client to query the SweatMgr
 
-This microservice is responsible for sending alerts and notifications:
-
-* Send messages via SMS / push-notifications 
-
-#### Reports Manager ####
-
-This microservice is responsible for:
-
-* Statistical reports
-* Administrative user reports 
-* Active/Inactive users
-
-### Inter-service Communication ###
-
-All services communicate between each other using gRPC. All services that are user-facing,
-i.e. services that are sending data to users mobile phone are sending vis RESTful Json API.
+This is a Hands-on tutorial and you're expected to make it work (not see it work)
 
